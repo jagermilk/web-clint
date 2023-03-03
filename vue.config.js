@@ -17,5 +17,21 @@ module.exports = defineConfig({
         additionalData: `@import "@/assets/scss/index.scss";` //引入全局变量   
       }
     }
+  },
+  devServer: {
+    proxy: {
+      '/api': {
+        target: 'http://192.168.1.171:31326/iidop-external/i18n/testLocale',
+        host:'0.0.0.0',
+        open:true,
+        headers:{
+          "group":"ywh"
+        },
+        changeOrigin: true,
+        pathRewrite: {
+          ['^'+process.env.VUE_APP_BASE_API]: ''
+        }
+      }
+    }
   }
 })

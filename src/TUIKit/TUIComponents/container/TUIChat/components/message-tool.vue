@@ -1,23 +1,13 @@
 <template>
   <div class="dialog-item" :class="env?.isH5 ? 'dialog-item-h5' : 'dialog-item-web'">
-    <MessageEmojiReact
-      v-if="env?.isH5 && needEmojiReact"
-      :message="message"
-      type="dropdown"
-      @handleCollapse="handleCollapse"
-    />
-    <ul
-      class="dialog-item-list"
-      :class="env?.isH5 ? 'dialog-item-list-h5' : 'dialog-item-list-web'"
-      v-show="showToolList"
-    >
-      <li
-        v-if="
-          (message.type === types.MSG_FILE || message.type === types.MSG_VIDEO || message.type === types.MSG_IMAGE) &&
-          !env.isH5
-        "
-        @click="openMessage(message)"
-      >
+    <MessageEmojiReact v-if="env?.isH5 && needEmojiReact" :message="message" type="dropdown"
+      @handleCollapse="handleCollapse" />
+    <ul class="dialog-item-list" :class="env?.isH5 ? 'dialog-item-list-h5' : 'dialog-item-list-web'"
+      v-show="showToolList">
+      <li v-if="
+        (message.type === types.MSG_FILE || message.type === types.MSG_VIDEO || message.type === types.MSG_IMAGE) &&
+        !env.isH5
+      " @click="openMessage(message)">
         <i class="icon icon-msg-copy"></i>
         <span>{{ $t('TUIChat.打开') }}</span>
       </li>
@@ -37,10 +27,8 @@
         <i class="icon icon-msg-reply"></i>
         <span>{{ $t('TUIChat.回复') }}</span>
       </li>
-      <li
-        v-if="message.flow === 'out' && message.status === 'success' && message.type !== types.MSG_CUSTOM"
-        @click="handleMseeage(message, constant.handleMessage.revoke)"
-      >
+      <li v-if="message.flow === 'out' && message.status === 'success' && message.type !== types.MSG_CUSTOM"
+        @click="handleMseeage(message, constant.handleMessage.revoke)">
         <i class="icon icon-msg-revoke"></i>
         <span>{{ $t('TUIChat.撤回') }}</span>
       </li>
@@ -56,7 +44,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, watch, reactive, toRefs, ref, watchEffect } from 'vue';
+import { defineComponent, watch, reactive, toRefs, ref, watchEffect, defineEmits } from 'vue';
 import { Message } from '../interface';
 import TIM from '../../../../TUICore/tim';
 import { handleErrorPrompts } from '../../utils';
@@ -65,6 +53,7 @@ import TUIAegis from '../../../../utils/TUIAegis';
 import useClipboard from 'vue-clipboard3';
 import { useStore } from 'vuex';
 import MessageEmojiReact from './message-emoji-react.vue';
+import axios from 'axios'
 export default defineComponent({
   props: {
     message: {
@@ -170,9 +159,36 @@ export default defineComponent({
       if (!data?.env?.isH5) return;
       data.showToolList = isCollapse;
     };
-    const translateMseeage=(message)=>{
-        console.log(message.payload.text);
-        
+    const isTranslate = ref(1)
+    const translateMseeage = (message) => {
+      console.log(isTranslate.value);
+
+      if (isTranslate.value == 1) {
+        isTranslate.value = 2
+        console.log('我要翻译');
+        let str = message.payload.text
+        // axios.get(`http://192.168.3.11:8080/translate?sourceText=${str}&source=auto&target=en`).then(res=>{
+        //   // let result=JSON.parse(res).data
+        //   const result=res.data
+        // })
+        let box = document.getElementById(message.ID);
+        let newBox = document.createElement('div');
+        newBox.innerText = '翻译成功';
+        box.appendChild(newBox);
+        newBox.id = 'translate';
+        box.style.textAlign = 'right';
+      }
+      else {
+        isTranslate.value = 1
+        console.log('取消翻译');
+        //javascript
+        let box = document.getElementById(message.ID);
+        //获取需要删除的div
+        let removeBox = box.querySelector('#translate');
+        //移除该div
+        box.removeChild(removeBox);
+      }
+      
     }
     return {
       ...toRefs(data),
@@ -180,6 +196,7 @@ export default defineComponent({
       handleMseeage,
       constant,
       handleCollapse,
+      isTranslate,
       translateMseeage
     };
   },
@@ -199,6 +216,7 @@ export default defineComponent({
   flex-wrap: wrap;
   align-items: baseline;
   white-space: nowrap;
+
   &-web {
     padding: 12px 0;
   }
@@ -210,9 +228,11 @@ export default defineComponent({
     white-space: nowrap;
     justify-content: space-around;
     width: 100%;
+
     &-h5 {
       flex-wrap: nowrap;
       margin: 10px;
+
       li {
         padding: 0 5px;
         display: flex;
@@ -222,6 +242,7 @@ export default defineComponent({
         color: #4f4f4f;
       }
     }
+
     &-web {
       li:first-child {
         margin-top: 0;
@@ -234,6 +255,7 @@ export default defineComponent({
         display: flex;
         flex-direction: row;
         align-items: center;
+
         span {
           padding-left: 4px;
         }

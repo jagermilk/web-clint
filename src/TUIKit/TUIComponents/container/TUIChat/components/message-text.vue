@@ -1,8 +1,7 @@
 <template>
   <template v-for="(item, index) in data.text" :key="index">
     <span class="text-box" v-if="item.name === 'text'">{{ item.text }}</span>
-    <img class="text-img" v-else-if="item.name === 'img'" :src="item.src" />
-    <div>我是翻译</div>
+    <img class="text-img" v-else-if="item.name === 'img'" :src="item.src" /> 
   </template>
 </template>
 
@@ -14,7 +13,7 @@ export default defineComponent({
     data: {
       type: Object,
       default: () => ({}),
-    },
+    }
   },
   setup(props: any, ctx: any) {
     const data = reactive({

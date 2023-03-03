@@ -50,7 +50,7 @@
             @showRepliesDialog="showDialog"
             @dropDownOpen="handleDropDownOpen"
           >
-            <MessageText v-if="item.type === types.MSG_TEXT" :data="handleTextMessageShowContext(item)" />
+            <MessageText v-if="item.type === types.MSG_TEXT" :data="handleTextMessageShowContext(item)"  />
             <MessageImage
               v-if="item.type === types.MSG_IMAGE"
               :data="handleImageMessageShowContext(item)"
@@ -1102,7 +1102,6 @@ const TUIChat: any = defineComponent({
       data.showImagePreview = !data.showImagePreview;
       data.currentImagePreview = message;
     };
-
     return {
       ...toRefs(data),
       conversationType,
@@ -1160,7 +1159,7 @@ const TUIChat: any = defineComponent({
       referOrReplyMessage,
       handleUploadingImageOrVideo,
       handleImagePreview,
-      imageList,
+      imageList
     };
   },
 });
